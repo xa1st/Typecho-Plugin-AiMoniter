@@ -3,19 +3,19 @@
 # 🤖 AI课代表 (AiMoniter)
 
 [![Release Version](https://img.shields.io/github/v/release/xa1st/Typecho-Plugin-AiMoniter?style=flat-square)](https://github.com/xa1st/Typecho-Plugin-AiMoniter/releases/latest)
-[![GitHub license](https://img.shields.io/github/license/xa1st/Typecho-Plugin-AiMoniter?style=flat-square)](LICENSE)
-![PHP Version](https://img.shields.io/badge/PHP-7.2+-4F5B93.svg?style=flat-square)
-[![Required Typecho Version](https://img.shields.io/badge/Typecho-1.1+-167B94.svg?style=flat-square)](https://typecho.org)
+[![许可证](https://img.shields.io/badge/许可证-木兰宽松第2版-red.svg)](https://license.coscl.org.cn/MulanPSL2)
+![PHP Version](https://img.shields.io/badge/PHP-8.0+-4F5B93.svg?style=flat-square)
+[![Required Typecho Version](https://img.shields.io/badge/Typecho-1.2+-167B94.svg?style=flat-square)](https://typecho.org)
 
 **让 AI 帮你评价博客文章的 Typecho 插件**  
 **支持 OpenAI 兼容接口与 Anthropic Claude（可通过中转接入 Gemini 等）**
 
-[🇨🇳 简体中文](README.md) | [🌏 English](README_EN.md)
+[简体中文](README.md) | [English](README_EN.md)
 
 </div>
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/xa1st/Typecho-Plugin-AiMoniter/main/screenshot.png" alt="AI课代表截图" width="720">
+  <img src="https://raw.githubusercontent.com/xa1st/Typecho-Plugin-AiMoniter/main/preview.png" alt="AI课代表截图" width="720">
 </p>
 
 ## ✨ 功能特性

@@ -3,19 +3,19 @@
 # 🤖 AI Class Monitor (AiMoniter)
 
 [![Release Version](https://img.shields.io/github/v/release/xa1st/Typecho-Plugin-AiMoniter?style=flat-square)](https://github.com/xa1st/Typecho-Plugin-AiMoniter/releases/latest)
-[![GitHub license](https://img.shields.io/github/license/xa1st/Typecho-Plugin-AiMoniter?style=flat-square)](LICENSE)
-![PHP Version](https://img.shields.io/badge/PHP-7.2+-4F5B93.svg?style=flat-square)
-[![Required Typecho Version](https://img.shields.io/badge/Typecho-1.1+-167B94.svg?style=flat-square)](https://typecho.org)
+[![License](https://img.shields.io/badge/license-MulanPSL--2.0-blue.svg)](https://license.coscl.org.cn/MulanPSL2)
+![PHP Version](https://img.shields.io/badge/PHP-8.0+-4F5B93.svg?style=flat-square)
+[![Required Typecho Version](https://img.shields.io/badge/Typecho-1.2+-167B94.svg?style=flat-square)](https://typecho.org)
 
 **A Typecho plugin that lets AI automatically review your blog posts**  
 **Supports OpenAI-compatible APIs and Anthropic Claude (Gemini via proxy)**
 
-[🇨🇳 简体中文](README.md) | [🌏 English](README_EN.md)
+[简体中文](README.md) | [English](README_EN.md)
 
 </div>
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/xa1st/Typecho-Plugin-AiMoniter/main/screenshot.png" alt="AI Class Monitor Screenshot" width="720">
+  <img src="https://raw.githubusercontent.com/xa1st/Typecho-Plugin-AiMoniter/main/preview.png" alt="AI Class Monitor Screenshot" width="720">
 </p>
 
 ## ✨ Features
