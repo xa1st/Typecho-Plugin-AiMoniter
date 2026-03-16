@@ -10,7 +10,7 @@
 **A Typecho plugin that lets AI automatically review your blog posts**  
 **Supports OpenAI-compatible APIs and Anthropic Claude (Gemini via proxy)**
 
-[简体中文](README.md) | [English](README_EN.md)
+[简体中文](README.md) | [English](README_EN.md) 
 
 </div>
 

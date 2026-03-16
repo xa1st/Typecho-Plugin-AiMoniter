@@ -10,7 +10,7 @@
 **让 AI 帮你评价博客文章的 Typecho 插件**  
 **支持 OpenAI 兼容接口与 Anthropic Claude（可通过中转接入 Gemini 等）**
 
-[简体中文](README.md) | [English](README_EN.md)
+[简体中文](README.md) | [English](README_EN.md) 
 
 </div>
 
