@@ -168,7 +168,7 @@ AiMoniter/
 
 ## 许可证
 
-[MulanPSL2 License](https://github.com/xa1st/Typecho-Plugin-AiMoniter/LICENSE)
+[MulanPSL2 License](https://github.com/xa1st/Typecho-Plugin-AiMoniter/blob/main/LICENSE)
 
 ## 作者
 

@@ -167,11 +167,15 @@ In the plugin, set **API URL** to the proxy endpoint, for example:
 
 ## License
 
-MIT License
+[MulanPSL2 License](https://github.com/xa1st/Typecho-Plugin-AiMoniter/blob/main/LICENSE)
 
 ## Author
 
-Cat DongDong (猫东东)
+Cat DongDong (猫东东) <xa1st@outlook.com>
+
+## Thanks
+- [Typecho](https://typecho.org/)
+- [Binjoo](https://digu.com)
 
 ## Links
 
