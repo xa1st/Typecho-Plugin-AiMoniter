@@ -66,19 +66,20 @@
 
 After activating the plugin, the AI will automatically generate a review whenever a new article is published and save it in JSON format to the `ai_comment` field in the database.
 
-You can use the following code in your theme to display the AI review:
+You can use the following code in your theme’s `post.php` to display the AI review:
 
 ```php
-// Get AI review for the current article (JSON format)
-$aiComment = json_decode((string)$this->fields->ai_comment, true);
-if (isset($aiComment['say']) && !empty($aiComment['say'])): ?>
-    <article class="post ai-comment">
-        <div class="ai-moniter-container">
-            <h2>AI Class Monitor Summary - Current Monitor: <?php echo htmlspecialchars($aiComment['ainame'] ?? 'Anonymous'); ?></h2>
-            <p><?php echo htmlspecialchars($aiComment['say']); ?></p>
-        </div>
-    </article>
+<!-- AI Monitor Start -->
+<?php $aiComment = json_decode((string)$this->fields->ai_comment, true); ?>
+<?php if (isset($aiComment['say']) && !empty($aiComment['say'])): ?>
+  <article class="post ai-comment">
+    <div class="ai-moniter-container">
+      <h2>AI Class Monitor Summary - Current Monitor: <?php echo htmlspecialchars($aiComment['ainame'] ?? 'Anonymous'); ?></h2>
+      <p><?php echo htmlspecialchars($aiComment['say']); ?></p>
+    </div>
+  </article>
 <?php endif; ?>
+<!-- AI Monitor End -->
 ```
 
 ### AI Review Data Structure

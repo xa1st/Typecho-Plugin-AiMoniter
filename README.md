@@ -66,19 +66,20 @@
 
 插件激活后，每当发布新文章时，AI 会自动生成评价并以JSON格式保存到数据库的 `ai_comment` 字段中。
 
-你可以在主题中使用以下方式获取和显示 AI 评价：
+你可以在主题中在post.php中加入以下代码，获取和显示 AI 评价：
 
 ```php
-// 获取当前文章的 AI 评价（JSON格式）
-$aiComment = json_decode((string)$this->fields->ai_comment, true);
-if (isset($aiComment['say']) && !empty($aiComment['say'])): ?>
-    <article class="post ai-comment">
-        <div class="ai-moniter-container">
-            <h2>AI课代表总结 - 当前课代表: <?php echo htmlspecialchars($aiComment['ainame'] ?? '无名氏'); ?></h2>
-            <p><?php echo htmlspecialchars($aiComment['say']); ?></p>
-        </div>
-    </article>
+<!-- AI课代表 开始 -->
+<?php $aiComment = json_decode((string)$this->fields->ai_comment, true); ?>
+<?php if (isset($aiComment['say']) && !empty($aiComment['say'])): ?>
+  <article class="post ai-comment">
+    <div class="ai-moniter-container">
+      <h2>AI课代表总结 - 当前课代表: <?php echo htmlspecialchars($aiComment['ainame'] ?? '无名氏'); ?></h2>
+      <p><?php echo htmlspecialchars($aiComment['say']); ?></p>
+    </div>
+  </article>
 <?php endif; ?>
+<!-- AI课代表 结束 -->
 ```
 
 ### AI 评价数据结构
