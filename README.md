@@ -40,9 +40,10 @@
 
 ## 安装
 
-1. 下载插件到 Typecho 的插件目录：`usr/plugins/AiMoniter/`
-2. 在 Typecho 后台激活插件
-3. 配置 AI 服务的 API 密钥和相关参数
+1. 下载插件解压到 Typecho 的插件目录：`usr/plugins`
+2. 将文件夹`Typecho-Plugin-AiMoniter-版本号`改名为`AiMoniter`
+3. 在 Typecho 后台激活插件
+4. 配置 AI 服务的 API 密钥和相关参数
 
 ## 配置
 
@@ -69,15 +70,15 @@
 
 ```php
 // 获取当前文章的 AI 评价（JSON格式）
-$aiComment = json_decode($this->fields->ai_comment);
-if ($aiComment && $aiComment->error === 0): ?>
+$aiComment = json_decode((string)$this->fields->ai_comment, true);
+if (isset($aiComment['say']) && !empty($aiComment['say'])): ?>
     <article class="post ai-comment">
         <div class="ai-moniter-container">
-            <h2>AI课代表总结 - 当前课代表: <?php echo $aiComment->ainame ?? '无名氏'; ?></h2>
-            <p><?php echo $aiComment->say ?? ''; ?></p>
+            <h2>AI课代表总结 - 当前课代表: <?php echo htmlspecialchars($aiComment['ainame'] ?? '无名氏'); ?></h2>
+            <p><?php echo htmlspecialchars($aiComment['say']); ?></p>
         </div>
     </article>
-<?php endif;
+<?php endif; ?>
 ```
 
 ### AI 评价数据结构
@@ -86,9 +87,8 @@ if ($aiComment && $aiComment->error === 0): ?>
 
 ```json
 {
-    "error": 0,                    // 错误码：0表示成功，1表示失败
-    "ainame": "AI课代表",          // AI课代表的名称
-    "say": "这是AI生成的评价内容"    // AI生成的评价文本
+  "ainame": "AI课代表",          // AI课代表的名称
+  "say": "这是AI生成的评价内容"    // AI生成的评价文本
 }
 ```
 
@@ -100,6 +100,10 @@ if ($aiComment && $aiComment->error === 0): ?>
 4. 卸载插件时可选择保留或删除生成的数据
 
 ## 更新日志
+
+### v2.2.0
+- 🔧 **代码优化**：精简现有的存储内容，取消多余判定
+- 🐞 **修复错误**：修复部分错误
 
 ### v2.1.0
 - ✨ **新增 Anthropic Claude 支持**

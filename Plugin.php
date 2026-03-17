@@ -22,7 +22,7 @@ if (!defined('__TYPECHO_ROOT_DIR__')) exit;
  * @package AiMoniter
  *
  * @author 猫东东
- * @version 2.1.0
+ * @version 2.2.0
  * @link https://github.com/xa1st/Typecho-Plugin-AiMoniter
  * 
  */
@@ -32,7 +32,7 @@ class Plugin implements PluginInterface {
      * 定义当前系统的版本号常量
      * 用于标识应用程序的版本信息，便于版本管理和兼容性检查
      */
-    const VERSION = '2.1.0';
+    const VERSION = '2.2.0';
 
     /**
      * 激活插件时绑定相关钩子
@@ -157,31 +157,32 @@ class Plugin implements PluginInterface {
             // 3. 如果API或者url为空，则不执行，因为有些模型不用写model
             if (empty($options->apiKey) || empty($options->apiUrl)) throw new \Exception('请填写API密钥和API地址');
             // 4. 检查是否已有成功生成的记录（避免重复消耗额度）
-            $exists = $db->fetchRow($db->select('str_value')->from('table.fields')->where('cid = ? AND name = ?', $cid, 'ai_comment'));
-            if ($exists) {
-                // 4.1 解析变量
-                $comment = json_decode($exists['str_value'], true);
-                // 4.2 如果已经生成过，也没错误，就直接跳过
-                if (isset($comment['error']) && $comment['error'] === 0) return;
-                // 4.3 如果有错误，就说明旧的存在，标记为更新，然后继续更新
+            $aiComment = $db->fetchRow($db->select('str_value')->from('table.fields')->where('cid = ? AND name = ?', $cid, 'ai_comment'));
+            // 5. 如果有成功生成的记录，则判断是否为更新
+            if ($aiComment && !empty($aiComment['str_value'])) {
+                // 5.1 解析变量
+                $comment = json_decode((string)$aiComment['str_value'], true);
+                // 5.2 如果已经生成过，也没错误，就直接跳过,评价不能是null也不会是0之类的，所以直接用empty即可
+                if (!empty($comment['say'])) return;
+                // 5.3 如果有错误，就说明旧的存在，标记为更新，然后继续更新
                 $isUpdate = true;
             }
-            // 5. 文本清洗与【关键】截断
-            // 5.1 很多 AI 接口在文章太长时会直接报错 400
+            // 6. 文本清洗与【关键】截断
+            // 6.1 很多 AI 接口在文章太长时会直接报错 400
             $cleanText = html_entity_decode(strip_tags(Markdown::convert($content['text'])), ENT_QUOTES, 'UTF-8');
-            // 5.2 这里截取前 2500 字足够评价使用
+            // 6.2 这里截取前 2500 字足够评价使用
             $cleanText = mb_substr($cleanText, 0, 2500, 'UTF-8');
-            // 5.3 安全替换占位符
+            // 6.3 安全替换占位符
             $replaceMap = ['{title}' => $content['title'], '{url}' => $widget->permalink, '{text}' => $cleanText];
-            // 5.4 尝试替换占位符
+            // 6.4 尝试替换占位符
             $promptText = strtr($options->prompt, $replaceMap);
-            // 6. 解析 JSON 参数
+            // 7. 解析 JSON 参数
             $extraParams = json_decode($options->others, true) ?: [];
-            // 5. 构造请求
+            // 8. 构造请求
             $requestOptions = [
-                'apiKey'           => $options->apiKey,
-                'apiUrl'           => $options->apiUrl,
-                'model'            => $options->modelName,
+                'apiKey'           => trim($options->apiKey),
+                'apiUrl'           => trim($options->apiUrl),
+                'model'            => trim($options->modelName),
                 'text'             => $promptText,
                 'timeout'          => (int)$options->timeOut,
                 'isReasoningModel' => (bool)$options->isReasoningModel,
@@ -190,14 +191,14 @@ class Plugin implements PluginInterface {
             // 发送请求
             $aiResponse = AiService::sendRequest($options->aiProvider, $requestOptions);
             // 构造响应
-            $res = ["error" => 0, "ainame" => $options->aiName, "say" => trim($aiResponse)];
+            $res = ["ainame" => $options->aiName, "say" => trim($aiResponse)];
         } catch (\Exception $e) {
             // 记录错误到数据库，以便前台提示“生成失败”而不是空白
-            $res = ["error" => 1, "ainame" => $options->aiName, "say" => "AI 课代表罢工了: " . $e->getMessage()];
+            $res = ["err" => "AI 课代表罢工了: " . $e->getMessage()];
         }
-        // 6.2 序列化, 不要序列化中文
+        // 9. 序列化, 不要序列化中文
         $res = json_encode($res, JSON_UNESCAPED_UNICODE);
-        // 6.3 如果是更新，则更新
+        // 10. 如果是更新，则更新
         if ($isUpdate) {
             $db->query($db->update('table.fields')->rows(['str_value' => $res])->where('cid = ? AND name = ?', $cid, 'ai_comment'));
         } else {

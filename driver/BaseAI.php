@@ -12,7 +12,7 @@ if (!defined('__TYPECHO_ROOT_DIR__')) exit;
  * 它封装了通用的网络请求、参数验证、响应解析以及内容清洗逻辑。
  * @package AiMoniter
  * @author 猫东东
- * @version 2.1.0
+ * @version 2.2.0
  */
 abstract class BaseAI {
     

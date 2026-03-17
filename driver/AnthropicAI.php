@@ -13,7 +13,7 @@ if (!defined('__TYPECHO_ROOT_DIR__')) exit;
  * 该驱动处理 Anthropic 特有的 Header 认证及数据响应结构。
  * @package AiMoniter
  * @author 猫东东
- * @version 2.1.0
+ * @version 2.2.0
  */
 class AnthropicAI extends BaseAI {
     

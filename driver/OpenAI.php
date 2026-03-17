@@ -13,7 +13,7 @@ if (!defined('__TYPECHO_ROOT_DIR__')) exit;
  * 如：DeepSeek, 月之暗面 (Kimi), 通义千问, Gemini (通过代理) 等。
  * * @package AiMoniter
  * @author 猫东东
- * @version 2.1.0
+ * @version 2.2.0
  */
 class OpenAI extends BaseAI {
     
