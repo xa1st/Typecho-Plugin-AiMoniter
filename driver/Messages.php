@@ -8,15 +8,15 @@ use TypechoPlugin\AiMoniter\driver\BaseAI;
 if (!defined('__TYPECHO_ROOT_DIR__')) exit;
 
 /**
- * Anthropic (Claude) 协议驱动
- * 主要针对 Claude-3 (Sonnet/Opus/Haiku) 以及最新的 3.5 系列模型。
- * 该驱动处理 Anthropic 特有的 Header 认证及数据响应结构。
+ * Messages 协议驱动 (Anthropic Claude)
+ * 主要针对 Claude 系列 (Sonnet/Opus/Haiku) 模型。
+ * 该驱动对接 /v1/messages 接口，处理 Anthropic 特有的 Header 认证及数据响应结构。
  * @package AiMoniter
  * @author 猫东东
- * @version 2.2.0
+ * @version 2.3.0
  */
-class AnthropicAI extends BaseAI {
-    
+class Messages extends BaseAI {
+
     /**
      * 生成文章评价内容
      *
@@ -38,7 +38,7 @@ class AnthropicAI extends BaseAI {
         // 1. 验证必要参数 (apiKey 和 text 是 Claude 请求的基础)
         $this->validateOptions($options, ['apiKey', 'text']);
         // 2. 准备请求地址 (默认为官方 Messages 接口)
-        $apiUrl = $options['apiUrl'] ?: 'https://api.anthropic.com/v1/messages';
+        $apiUrl = $this->resolveApiUrl($options['apiUrl'] ?: 'https://api.anthropic.com/v1', '/messages');
         // 3. 准备请求头
         // Anthropic 必须包含 x-api-key 和特定的版本号头
         $headers = [
@@ -61,7 +61,7 @@ class AnthropicAI extends BaseAI {
         // 5. 动态合并“其它参数”
         // 这里会合并 Plugin.php 解析出来的 temperature, top_p 等 JSON 配置
         if (!empty($options['extraParams']) && is_array($options['extraParams'])) $requestData = array_merge($requestData, $options['extraParams']);
-        
+
         // 6. 执行请求
         try {
             // 8. 发起请求
@@ -83,7 +83,7 @@ class AnthropicAI extends BaseAI {
             throw new Exception($e->getMessage());
         }
     }
-    
+
     /**
      * 提取并清洗内容
      *

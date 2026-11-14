@@ -8,7 +8,7 @@
 [![Required Typecho Version](https://img.shields.io/badge/Typecho-1.2+-167B94.svg?style=flat-square)](https://typecho.org)
 
 **A Typecho plugin that lets AI review your blog posts**  
-**Supports OpenAI-compatible APIs and Anthropic Claude (Gemini via proxy)**
+**Supports three API formats: Chat / Messages / Responses (OpenAI, Anthropic Claude, etc.; Gemini via proxy)**
 
 [简体中文](README.md) | [English](README_EN.md) 
 
@@ -20,7 +20,7 @@
 
 ## ✨ Features
 
-- 🤖 **Multi-Service Support** - OpenAI-compatible APIs and Anthropic Claude
+- 🤖 **Multi-Protocol Support** - Three API formats: Chat / Messages / Responses
 - 🎯 **Smart Reviews** - AI automatically generates personalized comments for each article
 - ⚡ **Auto-Trigger** - Reviews are generated automatically after publishing
 - 🛠️ **Highly Configurable** - Custom API endpoints and model parameters (JSON passthrough)
@@ -30,13 +30,17 @@
 
 ## Supported AI Services
 
-### OpenAI-Compatible API
+### Chat (OpenAI-Compatible API)
 - Endpoint: `/v1/chat/completions`
 - Works with OpenAI or any service/proxy compatible with this protocol
 
-### Anthropic Claude
+### Messages (Anthropic Claude)
 - Endpoint: `/v1/messages`
 - Requires `x-api-key` and `anthropic-version` headers
+
+### Responses (OpenAI New API)
+- Endpoint: `/v1/responses`
+- Designed for GPT-5.x, o-series and other newer models; legacy `max_tokens` is automatically mapped to `max_output_tokens`
 
 ## Installation
 
@@ -49,10 +53,10 @@
 
 ### Basic Configuration
 
-1. **AI Service Provider**: Choose the AI service (OpenAI-compatible / Anthropic Claude)
+1. **AI Service Provider**: Choose the API format (Chat / Messages / Responses)
 2. **API KEY**: Enter the API key for the selected service
 3. **Model Name**: Specify the exact model you want to use
-4. **API URL**: Required, custom API endpoint (proxy supported)
+4. **API URL**: Required, custom API endpoint (proxy supported). Two formats are supported: base URL only (e.g. `https://api.xxx.com/v1`, the endpoint path is completed automatically by the selected format), or the full endpoint URL (proxies may include a token)
 
 ### Advanced Configuration
 
@@ -102,6 +106,13 @@ The plugin stores AI reviews in JSON format with the following fields:
 
 ## Changelog
 
+> For the full history, see [CHANGELOG.md](CHANGELOG.md)
+
+### v2.3.0
+- ✨ **Added Responses Format**: Support for OpenAI's new `/v1/responses` API (GPT-5.x, o-series and other newer models)
+- 🔧 **Renamed Provider Options**: `openai` / `anthropicai` renamed to `chat` / `messages` / `responses`, with automatic backward compatibility
+- 🐞 **Bug Fixes**: Fixed article publishing being interrupted by AI request timeouts, API errors, or database primary key conflicts; failures are now recorded as a "generation failed" notice instead of throwing exceptions
+
 ### v2.2.0
 - 🔧 **Code Optimization**: Streamlined existing storage content and removed redundant checks
 - 🐞 **Bug Fixes**: Fixed some issues
@@ -129,11 +140,13 @@ AiMoniter/
 ├── AiService.php       # AI service management class
 ├── driver/             # AI drivers directory
 │   ├── BaseAI.php          # Base driver abstract class
-│   ├── OpenAI.php          # OpenAI-compatible driver
-│   └── AnthropicAI.php     # Anthropic Claude driver
+│   ├── Chat.php            # Chat driver (OpenAI-compatible)
+│   ├── Messages.php        # Messages driver (Anthropic Claude)
+│   └── Responses.php       # Responses driver (OpenAI new API)
 ├── scripts/            # Proxy examples
 │   ├── cloudflare.worker.js # Cloudflare Workers
 │   └── deno.dev.js          # Deno Deploy
+├── CHANGELOG.md        # Changelog
 └── README.md           # Documentation
 ```
 
@@ -169,7 +182,8 @@ Both support:
 - Health check response on root path
 
 In the plugin, set **API URL** to the proxy endpoint, for example:  
-`https://<your-domain>/v1/chat/completions?token=YOUR_TOKEN`
+`https://<your-domain>/v1/chat/completions?token=YOUR_TOKEN`  
+You can also enter just the base URL `https://<your-domain>/v1`; the endpoint path is completed automatically by the selected format.
 
 ## License
 

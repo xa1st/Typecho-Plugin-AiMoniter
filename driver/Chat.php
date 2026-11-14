@@ -8,15 +8,16 @@ use TypechoPlugin\AiMoniter\driver\BaseAI;
 if (!defined('__TYPECHO_ROOT_DIR__')) exit;
 
 /**
- * OpenAI 协议 API 驱动
- * * 本驱动不仅支持原生的 OpenAI 服务，也兼容所有遵循 OpenAI 接口规范的三方服务
+ * Chat 协议 API 驱动 (OpenAI 兼容)
+ * * 本驱动对接 /v1/chat/completions 接口，不仅支持原生的 OpenAI 服务，
+ * 也兼容所有遵循该接口规范的三方服务
  * 如：DeepSeek, 月之暗面 (Kimi), 通义千问, Gemini (通过代理) 等。
  * * @package AiMoniter
  * @author 猫东东
- * @version 2.2.0
+ * @version 2.3.0
  */
-class OpenAI extends BaseAI {
-    
+class Chat extends BaseAI {
+
     /**
      * 生成文章评价内容
      * * @param array $options 请求选项
@@ -27,8 +28,8 @@ class OpenAI extends BaseAI {
         // 1. 验证必要参数 (apiKey 和 text 是必须的)
         $this->validateOptions($options, ['apiKey', 'text']);
         // 2. 准备请求地址
-        // 如果用户没填 API 地址，则尝试猜测（虽然 Plugin.php 已经做了必填校验，这里做二重保险）
-        $apiUrl = $options['apiUrl'] ?: 'https://api.openai.com/v1/chat/completions';
+        // 如果用户没填 API 地址，则默认使用官方根路径；只填到 /v1 时会自动补全完整接口路径
+        $apiUrl = $this->resolveApiUrl($options['apiUrl'] ?: 'https://api.openai.com/v1', '/chat/completions');
         // 3. 准备请求头
         $headers = [
             'Authorization' => 'Bearer ' . $options['apiKey'],
@@ -47,7 +48,7 @@ class OpenAI extends BaseAI {
         // 5. 动态合并“其它参数”
         // 只有非思考模型才合并温度等参数；或者如果用户在后台填了 JSON，则优先尊重用户的 JSON
         if (!empty($options['extraParams']) && is_array($options['extraParams'])) $requestData = array_merge($requestData, $options['extraParams']);
-        
+
         // 6. 执行请求 (调用 BaseAI 封装的 Typecho 客户端方法)
         try {
             // 发起请求
@@ -56,7 +57,7 @@ class OpenAI extends BaseAI {
             if ($statusCode !== 200) throw new Exception("服务器返回了异常状态码 [{$statusCode}]: " . $responseBody);
             // 7. 解析 JSON 响应
             $data = $this->parseResponse($responseBody);
-            // 8. 检查业务逻辑错误 (OpenAI 协议通常在 error 字段返回详情)
+            // 8. 检查业务逻辑错误 (Chat 协议通常在 error 字段返回详情)
             if (!empty($data['error'])) {
                 $errorMsg = is_array($data['error']) ? ($data['error']['message'] ?? json_encode($data['error'])) : $data['error'];
                 throw new Exception('API 内部错误: ' . $errorMsg);
@@ -72,7 +73,7 @@ class OpenAI extends BaseAI {
             throw new Exception($e->getMessage());
         }
     }
-    
+
     /**
      * 提取并清洗 API 返回的内容
      * * 特别处理了“思考模型”可能出现的 reasoning 字段或正文中的 think 标签

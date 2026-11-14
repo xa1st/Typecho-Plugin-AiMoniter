@@ -13,7 +13,7 @@ class AiService {
     /**
      * 发送 AI 请求
      *
-     * @param string $provider 服务提供商，支持 'openai' 或 'anthropicai'
+     * @param string $provider 接口协议，支持 'chat'、'messages' 或 'responses'
      * @param array $options 请求选项，必须包含 'apiKey' 和 'text' 键
      * @return string AI 生成的响应内容
      * @throws Exception 当缺少必要参数、驱动类不存在或配置错误时抛出异常
@@ -43,14 +43,18 @@ class AiService {
      */
     private static function getDriverClass($provider) {
         // 映射关系
+        // openai / anthropicai 为历史版本遗留的配置值，保留别名兼容，避免老用户升级后配置失效
         $driverMap = [
-            'openai'      => \TypechoPlugin\AiMoniter\driver\OpenAI::class,
-            'anthropicai' => \TypechoPlugin\AiMoniter\driver\AnthropicAI::class,
+            'chat'        => \TypechoPlugin\AiMoniter\driver\Chat::class,
+            'messages'    => \TypechoPlugin\AiMoniter\driver\Messages::class,
+            'responses'   => \TypechoPlugin\AiMoniter\driver\Responses::class,
+            'openai'      => \TypechoPlugin\AiMoniter\driver\Chat::class,      // 兼容旧版 openai
+            'anthropicai' => \TypechoPlugin\AiMoniter\driver\Messages::class, // 兼容旧版 anthropicai
         ];
         // 映射
         return $driverMap[strtolower($provider)] ?? null;
     }
-    
+
     /**
      * 获取支持的列表 (用于同步 Plugin.php 的 UI 展示)
      *
@@ -59,8 +63,9 @@ class AiService {
     public static function getSupportedProviders() {
         // 返回支持的服务提供商列表
         return [
-            'openai'      => 'OpenAI (Compatible)',
-            'anthropicai' => 'Anthropic Claude',
+            'chat'      => 'Chat (OpenAI Compatible)',
+            'messages'  => 'Messages (Anthropic Claude)',
+            'responses' => 'Responses (OpenAI New)',
         ];
     }
 }

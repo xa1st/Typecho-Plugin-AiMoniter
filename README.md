@@ -8,7 +8,7 @@
 [![Required Typecho Version](https://img.shields.io/badge/Typecho-1.2+-167B94.svg?style=flat-square)](https://typecho.org)
 
 **让 AI 帮你评价博客文章的 Typecho 插件**  
-**支持 OpenAI 兼容接口与 Anthropic Claude（可通过中转接入 Gemini 等）**
+**支持 Chat / Messages / Responses 三种接口格式（OpenAI、Anthropic Claude 等，可通过中转接入 Gemini）**
 
 [简体中文](README.md) | [English](README_EN.md) 
 
@@ -20,7 +20,7 @@
 
 ## ✨ 功能特性
 
-- 🤖 **多服务支持** - OpenAI 兼容接口与 Anthropic Claude
+- 🤖 **多协议支持** - Chat / Messages / Responses 三种接口格式
 - 🎯 **智能评价** - AI 自动为每篇文章生成个性化评论
 - ⚡ **自动触发** - 文章发布后自动生成 AI 评价
 - 🛠️ **高度可配置** - 支持自定义 API 地址、模型参数（JSON透传）
@@ -30,13 +30,17 @@
 
 ## 支持的AI服务
 
-### OpenAI 兼容接口
+### Chat（OpenAI 兼容接口）
 - 协议：`/v1/chat/completions`
 - 可直连 OpenAI 官方，也可使用任意兼容该协议的服务或中转
 
-### Anthropic Claude
+### Messages（Anthropic Claude）
 - 协议：`/v1/messages`
 - 需要 `x-api-key` 与 `anthropic-version` 头
+
+### Responses（OpenAI 新版接口）
+- 协议：`/v1/responses`
+- 面向 GPT-5.x、o 系列等新一代模型，旧写法 `max_tokens` 会自动映射为 `max_output_tokens`
 
 ## 安装
 
@@ -49,10 +53,10 @@
 
 ### 基本配置
 
-1. **AI 服务提供商**：选择要使用的 AI 服务（OpenAI 兼容 / Anthropic Claude）
+1. **AI 服务提供商**：选择要使用的接口格式（Chat / Messages / Responses）
 2. **API KEY**：输入对应服务的 API 密钥
 3. **模型名称**：指定要使用的具体模型
-4. **API 地址**：必填，自定义 API 地址（支持中转/代理）
+4. **API 地址**：必填，自定义 API 地址（支持中转/代理）。支持两种写法：只填根路径（如 `https://api.xxx.com/v1`，按接口格式自动补全接口路径），或完整地址（中转可带 token）
 
 ### 高级配置
 
@@ -102,6 +106,13 @@
 
 ## 更新日志
 
+> 完整更新历史请查看 [CHANGELOG.md](CHANGELOG.md)
+
+### v2.3.0
+- ✨ **新增 Responses 格式**：支持 OpenAI 新版 `/v1/responses` 接口（GPT-5.x、o 系列等新一代模型）
+- 🔧 **接口选项更名**：`openai` / `anthropicai` 更名为 `chat` / `messages` / `responses`，旧配置自动兼容
+- 🐞 **修复错误**：修复 AI 请求超时、接口异常或数据库主键冲突时中断文章发布的问题，相关失败不再抛出异常，只记录为前台「生成失败」提示
+
 ### v2.2.0
 - 🔧 **代码优化**：精简现有的存储内容，取消多余判定
 - 🐞 **修复错误**：修复部分错误
@@ -129,11 +140,13 @@ AiMoniter/
 ├── AiService.php       # AI 服务管理类
 ├── driver/             # AI 驱动目录
 │   ├── BaseAI.php          # 基础驱动抽象类
-│   ├── OpenAI.php          # OpenAI 兼容驱动
-│   └── AnthropicAI.php     # Anthropic Claude 驱动
+│   ├── Chat.php            # Chat 驱动 (OpenAI 兼容)
+│   ├── Messages.php        # Messages 驱动 (Anthropic Claude)
+│   └── Responses.php       # Responses 驱动 (OpenAI 新版接口)
 ├── scripts/            # 中转平台示例
 │   ├── cloudflare.worker.js # Cloudflare Workers 版本
 │   └── deno.dev.js          # Deno Deploy 版本
+├── CHANGELOG.md        # 更新日志
 └── README.md           # 说明文档
 ```
 
@@ -169,7 +182,8 @@ AiMoniter/
 - 访问根路径返回健康检查信息
 
 插件中使用时，将 **API 地址** 设置为中转地址，例如：  
-`https://<你的域名>/v1/chat/completions?token=YOUR_TOKEN`
+`https://<你的域名>/v1/chat/completions?token=YOUR_TOKEN`  
+也可以只填根路径 `https://<你的域名>/v1`，插件会按接口格式自动补全接口路径。
 
 ## 许可证
 

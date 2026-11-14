@@ -12,7 +12,7 @@ if (!defined('__TYPECHO_ROOT_DIR__')) exit;
  * 它封装了通用的网络请求、参数验证、响应解析以及内容清洗逻辑。
  * @package AiMoniter
  * @author 猫东东
- * @version 2.2.0
+ * @version 2.3.0
  */
 abstract class BaseAI {
     
@@ -58,6 +58,25 @@ abstract class BaseAI {
                 throw new Exception("驱动配置错误：参数 [{$param}] 不能为空。");
             }
         }
+    }
+    
+    /**
+     * 解析最终的 API 完整地址
+     * 兼容两种填写惯例：
+     * 1. 根路径写法：如 https://api.openai.com/v1，将根据驱动类型自动补全接口路径
+     * 2. 完整地址写法：如 https://xxx.deno.dev/v1/chat/completions?token=xx（部分中转必须在地址上带 token），原样使用
+     *
+     * @param string $apiUrl 用户填写的 API 地址
+     * @param string $suffix 当前驱动对应的接口路径，如 /chat/completions
+     * @return string 最终请求的完整接口地址
+     */
+    protected function resolveApiUrl($apiUrl, $suffix) {
+        // 1. 去掉右侧多余的斜杠，统一处理基准
+        $apiUrl = rtrim((string)$apiUrl, '/');
+        // 2. 去掉右侧斜杠后，若地址以 /v1 结尾，则视为版本根路径，根据接口类型补全
+        if (substr($apiUrl, -3) === '/v1') return $apiUrl . $suffix;
+        // 3. 否则视为完整的接口地址，原样返回（兼容中转地址自带 token 等场景）
+        return $apiUrl;
     }
     
     /**
